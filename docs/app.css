@@ -1,14 +1,14 @@
 :root {
   --ink: #141820;
   --ink-soft: #4c525c;
-  --accent: #ea5c3a;
-  --ocean: #2c6ea6;
+  --accent: #3a7de0;
+  --ocean: #3c6ee8;
   --mint: #2fae9a;
   --amber: #e1b137;
-  --slate: #596373;
-  --clay: #bf5a43;
-  --bg-top: #1b2230;
-  --bg-bottom: #f3efe7;
+  --slate: #5a6476;
+  --clay: #7a6a55;
+  --bg-top: #182233;
+  --bg-bottom: #eef3f6;
   --card: rgba(255, 255, 255, 0.92);
   --shadow: 0 14px 30px rgba(12, 16, 24, 0.18);
 }
