@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#1b2230" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="CivicNest" />
+  <title>CivicNest</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"></div>
+  <div class="toast" id="toast" aria-live="polite"></div>
+
+  <div class="lock" id="lock" role="dialog" aria-modal="true" aria-label="Екран доступу">
+    <div class="lock-card">
+      <div class="lock-title" id="lockTitle">Доступ</div>
+      <div class="lock-sub" id="lockSub">Введіть PIN або використайте Face ID</div>
+      <div class="pin-dots" id="pinDots" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <div class="lock-actions">
+        <button class="ghost-btn full" id="faceIdBtn">Face ID</button>
+      </div>
+      <div class="pin-grid" id="pinGrid">
+        <button data-pin="1">1</button>
+        <button data-pin="2">2</button>
+        <button data-pin="3">3</button>
+        <button data-pin="4">4</button>
+        <button data-pin="5">5</button>
+        <button data-pin="6">6</button>
+        <button data-pin="7">7</button>
+        <button data-pin="8">8</button>
+        <button data-pin="9">9</button>
+        <button data-pin="reset">⟲</button>
+        <button data-pin="0">0</button>
+        <button data-pin="back">⌫</button>
+      </div>
+      <div class="lock-note" id="lockNote">Демо PIN: 1234</div>
+    </div>
+  </div>
+
+  <div class="splash" id="splash" role="dialog" aria-modal="true" aria-label="Вітальний екран">
+    <div class="splash-card">
+      <div class="splash-mark">CN</div>
+      <div class="splash-title">CivicNest</div>
+      <div class="splash-sub">Приватний сейф документів</div>
+      <button class="primary-btn full" id="enterApp">Відкрити</button>
+      <div class="splash-note">Дані збережені локально • неофіційний демо-додаток</div>
+    </div>
+  </div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">CN</div>
+        <div>
+          <div class="brand-title">CivicNest</div>
+          <div class="brand-sub">твій приватний паспорт даних</div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" data-action="notifications" aria-label="Сповіщення">🔔</button>
+        <button class="ghost-btn">Увійти</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="view is-active" data-view="docs">
+        <div class="hero">
+          <div>
+            <div class="hero-title">Привіт, Софіє</div>
+            <div class="hero-sub">Дані збережені локально та під контролем</div>
+          </div>
+          <div class="avatar">СК</div>
+        </div>
+
+        <div class="quick-actions">
+          <button class="quick-card" data-action="qr">Показати QR</button>
+          <button class="quick-card" data-action="share">Поділитись</button>
+          <button class="quick-card" data-action="refresh">Оновити</button>
+        </div>
+
+        <div class="section">
+          <div class="section-header">
+            <span>Документи</span>
+            <button class="link-btn" data-action="all-docs">Усі</button>
+          </div>
+          <div class="cards-scroll" id="docCards"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-header">
+            <span>Останні дії</span>
+          </div>
+          <div class="activity">
+            <div class="activity-item">
+              <div class="activity-icon ocean">↻</div>
+              <div>
+                <div class="activity-title">Документ оновлено</div>
+                <div class="activity-sub">ID картка • сьогодні 09:12</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon mint">✓</div>
+              <div>
+                <div class="activity-title">Сервіс виконано</div>
+                <div class="activity-sub">Довідка про доходи • вчора 18:40</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon amber">✉</div>
+              <div>
+                <div class="activity-title">Запит створено</div>
+                <div class="activity-sub">Підтвердження документів • 28.01</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-view="services">
+        <div class="hero compact">
+          <div>
+            <div class="hero-title">Сервіси</div>
+            <div class="hero-sub">Швидкі дії для твоїх документів</div>
+          </div>
+        </div>
+        <div class="search-bar">
+          <input class="search-input" id="serviceSearch" type="search" placeholder="Пошук сервісів" />
+        </div>
+        <div class="chip-group" role="tablist" aria-label="Фільтри сервісів">
+          <button class="chip is-active" data-filter="all" role="tab" aria-selected="true">Усі</button>
+          <button class="chip" data-filter="docs" role="tab" aria-selected="false">Документи</button>
+          <button class="chip" data-filter="finance" role="tab" aria-selected="false">Фінанси</button>
+          <button class="chip" data-filter="health" role="tab" aria-selected="false">Здоров'я</button>
+        </div>
+        <div class="services-grid">
+          <div class="service-card" data-category="docs">
+            <div class="service-icon ocean">Док</div>
+            <div class="service-title">Довідки</div>
+            <div class="service-sub">Витяги та статуси</div>
+          </div>
+          <div class="service-card" data-category="finance">
+            <div class="service-icon amber">Шт</div>
+            <div class="service-title">Штрафи</div>
+            <div class="service-sub">Перевірка та оплата</div>
+          </div>
+          <div class="service-card" data-category="health">
+            <div class="service-icon mint">Мед</div>
+            <div class="service-title">Медицина</div>
+            <div class="service-sub">Записи та карти</div>
+          </div>
+          <div class="service-card" data-category="docs">
+            <div class="service-icon clay">QR</div>
+            <div class="service-title">Підтвердження</div>
+            <div class="service-sub">Шеринг та QR</div>
+          </div>
+          <div class="service-card" data-category="finance">
+            <div class="service-icon slate">Под</div>
+            <div class="service-title">Податки</div>
+            <div class="service-sub">Статус ФОП</div>
+          </div>
+          <div class="service-card" data-category="docs">
+            <div class="service-icon ocean">Тр</div>
+            <div class="service-title">Транспорт</div>
+            <div class="service-sub">Авто та реєстрації</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-view="qr">
+        <div class="hero compact">
+          <div>
+            <div class="hero-title">Твій QR</div>
+            <div class="hero-sub">Показуй для швидкого підтвердження</div>
+          </div>
+        </div>
+        <div class="qr-wrap">
+          <div class="qr-box">
+            <canvas id="qrCanvas" width="240" height="240" aria-label="QR код"></canvas>
+          </div>
+          <div class="qr-caption" id="qrCaption">Дійсний 3 хвилини</div>
+          <button class="primary-btn" data-action="refresh-qr">Оновити код</button>
+        </div>
+      </section>
+
+      <section class="view" data-view="profile">
+        <div class="hero compact">
+          <div>
+            <div class="hero-title">Профіль</div>
+            <div class="hero-sub">Особисті дані та безпека</div>
+          </div>
+        </div>
+        <div class="profile-card">
+          <div class="avatar large">СК</div>
+          <div>
+            <div class="profile-name">Софія Коваль</div>
+            <div class="profile-sub">+38 099 321 45 67</div>
+            <div class="profile-sub">sofia.koval@example.com</div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <span>Налаштування</span>
+          </div>
+          <div class="settings">
+            <div class="setting-row">
+              <span>Особисті дані</span>
+              <span class="setting-sub">Контакти та адреса</span>
+            </div>
+            <div class="setting-row">
+              <span>Безпека</span>
+              <span class="setting-sub">PIN, Face ID</span>
+            </div>
+            <div class="setting-row">
+              <span>Сповіщення</span>
+              <span class="setting-sub">Канали та частота</span>
+            </div>
+            <div class="setting-row">
+              <span>Допомога</span>
+              <span class="setting-sub">Підтримка</span>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <span>Керування</span>
+          </div>
+          <div class="settings">
+            <button class="setting-row action" data-action="edit-docs">Редагувати документи</button>
+            <button class="setting-row action" data-action="export-data">Експорт JSON</button>
+            <button class="setting-row action" data-action="import-data">Імпорт JSON</button>
+            <button class="setting-row action" data-action="reset-pin">Скинути PIN</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="tabbar" role="tablist">
+      <button class="tab is-active" role="tab" data-target="docs" aria-selected="true">Документи</button>
+      <button class="tab" role="tab" data-target="services" aria-selected="false">Сервіси</button>
+      <button class="tab" role="tab" data-target="qr" aria-selected="false">QR</button>
+      <button class="tab" role="tab" data-target="profile" aria-selected="false">Профіль</button>
+    </nav>
+  </div>
+
+  <div class="modal" id="docModal" aria-hidden="true" role="dialog" aria-label="Деталі документа">
+    <div class="modal-card" data-accent="ocean">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="modalTitle">Документ</div>
+          <div class="modal-sub" id="modalSub">—</div>
+        </div>
+        <button class="ghost-btn icon" id="closeModal" aria-label="Закрити">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-row"><span>Номер</span><strong id="modalNumber">—</strong></div>
+        <div class="modal-row"><span>Видано</span><strong id="modalIssued">—</strong></div>
+        <div class="modal-row"><span>Діє до</span><strong id="modalExpires">—</strong></div>
+        <div class="modal-row"><span>Статус</span><strong id="modalStatus">—</strong></div>
+      </div>
+      <div class="modal-actions">
+        <button class="primary-btn full" data-action="modal-qr">Показати QR</button>
+        <button class="ghost-btn full" data-action="modal-edit">Редагувати</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet" id="docsSheet" aria-hidden="true" role="dialog" aria-label="Усі документи">
+    <div class="sheet-card">
+      <div class="sheet-header">
+        <div>
+          <div class="sheet-title">Усі документи</div>
+          <div class="sheet-sub">Доступні офлайн</div>
+        </div>
+        <div class="sheet-header-actions">
+          <button class="ghost-btn icon" data-action="add-doc" aria-label="Додати">＋</button>
+          <button class="ghost-btn icon" data-close aria-label="Закрити">✕</button>
+        </div>
+      </div>
+      <div class="sheet-list" id="docList"></div>
+    </div>
+  </div>
+
+  <div class="sheet" id="editSheet" aria-hidden="true" role="dialog" aria-label="Редагування документа">
+    <div class="sheet-card">
+      <div class="sheet-header">
+        <div>
+          <div class="sheet-title" id="editTitle">Документ</div>
+          <div class="sheet-sub">Заповни ключові поля</div>
+        </div>
+        <button class="ghost-btn icon" data-close aria-label="Закрити">✕</button>
+      </div>
+      <form id="editForm" class="form">
+        <label class="field">
+          <span>Назва</span>
+          <input type="text" name="title" required />
+        </label>
+        <label class="field">
+          <span>Підзаголовок</span>
+          <input type="text" name="sub" required />
+        </label>
+        <label class="field">
+          <span>Номер</span>
+          <input type="text" name="number" required />
+        </label>
+        <div class="field-grid">
+          <label class="field">
+            <span>Видано</span>
+            <input type="text" name="issued" required />
+          </label>
+          <label class="field">
+            <span>Діє до</span>
+            <input type="text" name="expires" required />
+          </label>
+        </div>
+        <label class="field">
+          <span>Статус</span>
+          <input type="text" name="status" required />
+        </label>
+        <label class="field">
+          <span>Акцент</span>
+          <select name="accent">
+            <option value="ocean">Синій</option>
+            <option value="mint">М'ята</option>
+            <option value="amber">Бурштин</option>
+            <option value="slate">Сланець</option>
+          </select>
+        </label>
+        <div class="sheet-actions">
+          <button type="button" class="ghost-btn full" data-action="delete-doc">Видалити</button>
+          <button type="submit" class="primary-btn full">Зберегти</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="sheet" id="shareSheet" aria-hidden="true" role="dialog" aria-label="Поділитися документом">
+    <div class="sheet-card">
+      <div class="sheet-header">
+        <div>
+          <div class="sheet-title">Поділитись</div>
+          <div class="sheet-sub">Вибери спосіб</div>
+        </div>
+        <button class="ghost-btn icon" data-close aria-label="Закрити">✕</button>
+      </div>
+      <div class="share-grid">
+        <button class="share-option" data-action="share-copy">Скопіювати</button>
+        <button class="share-option" data-action="share-qr">QR код</button>
+        <button class="share-option" data-action="share-email">Email</button>
+        <button class="share-option" data-action="share-audio">Зателефонувати</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet" id="notifySheet" aria-hidden="true" role="dialog" aria-label="Сповіщення">
+    <div class="sheet-card">
+      <div class="sheet-header">
+        <div>
+          <div class="sheet-title">Сповіщення</div>
+          <div class="sheet-sub">Останні оновлення</div>
+        </div>
+        <button class="ghost-btn icon" data-close aria-label="Закрити">✕</button>
+      </div>
+      <div class="sheet-list">
+        <div class="notify-item">
+          <div class="notify-title">Документ оновлено</div>
+          <div class="notify-sub">ID картка • 09:12</div>
+        </div>
+        <div class="notify-item">
+          <div class="notify-title">Нове повідомлення</div>
+          <div class="notify-sub">Запит підтвердження документів</div>
+        </div>
+        <div class="notify-item">
+          <div class="notify-title">Сервіс виконано</div>
+          <div class="notify-sub">Довідка про доходи</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet" id="dataSheet" aria-hidden="true" role="dialog" aria-label="Експорт або імпорт даних">
+    <div class="sheet-card">
+      <div class="sheet-header">
+        <div>
+          <div class="sheet-title" id="dataTitle">Дані</div>
+          <div class="sheet-sub">Збережи або імпортуй JSON</div>
+        </div>
+        <button class="ghost-btn icon" data-close aria-label="Закрити">✕</button>
+      </div>
+      <div class="field">
+        <span>JSON</span>
+        <textarea id="dataTextarea" rows="8"></textarea>
+      </div>
+      <div class="sheet-actions">
+        <button class="ghost-btn full" data-action="copy-data">Скопіювати</button>
+        <button class="primary-btn full" data-action="apply-data">Застосувати</button>
+      </div>
+    </div>
+  </div>
+
+  <template id="docCardTemplate">
+    <article class="doc-card">
+      <div class="doc-accent"></div>
+      <div class="doc-top">
+        <span class="pill"></span>
+        <span class="doc-type"></span>
+      </div>
+      <div class="doc-sub"></div>
+      <div class="doc-number"></div>
+      <div class="doc-meta"></div>
+    </article>
+  </template>
+
+  <template id="docSheetTemplate">
+    <button class="sheet-item">
+      <div>
+        <div class="sheet-item-title"></div>
+        <div class="sheet-item-sub"></div>
+      </div>
+      <span class="pill"></span>
+    </button>
+  </template>
+
+  <script src="qr-lib.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
